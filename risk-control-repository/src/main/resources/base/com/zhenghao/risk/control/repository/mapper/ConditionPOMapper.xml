@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhenghao.risk.control.repository.mapper.ConditionPOMapper">
+  <resultMap id="BaseResultMap" type="com.zhenghao.risk.control.common.model.ConditionPO">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="left_category" jdbcType="VARCHAR" property="leftCategory" />
+    <result column="left_value" jdbcType="VARCHAR" property="leftValue" />
+    <result column="right_category" jdbcType="VARCHAR" property="rightCategory" />
+    <result column="right_value" jdbcType="VARCHAR" property="rightValue" />
+    <result column="comparator" jdbcType="VARCHAR" property="comparator" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    id, left_category, left_value, right_category, right_value, comparator
+  </sql>
+  <select id="selectByExample" parameterType="com.zhenghao.risk.control.common.model.ConditionPOExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from t_condition
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_condition
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from t_condition
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.zhenghao.risk.control.common.model.ConditionPOExample">
+    delete from t_condition
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.zhenghao.risk.control.common.model.ConditionPO">
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into t_condition (left_category, left_value, right_category, 
+      right_value, comparator)
+    values (#{leftCategory,jdbcType=VARCHAR}, #{leftValue,jdbcType=VARCHAR}, #{rightCategory,jdbcType=VARCHAR}, 
+      #{rightValue,jdbcType=VARCHAR}, #{comparator,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.zhenghao.risk.control.common.model.ConditionPO">
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into t_condition
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="leftCategory != null">
+        left_category,
+      </if>
+      <if test="leftValue != null">
+        left_value,
+      </if>
+      <if test="rightCategory != null">
+        right_category,
+      </if>
+      <if test="rightValue != null">
+        right_value,
+      </if>
+      <if test="comparator != null">
+        comparator,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="leftCategory != null">
+        #{leftCategory,jdbcType=VARCHAR},
+      </if>
+      <if test="leftValue != null">
+        #{leftValue,jdbcType=VARCHAR},
+      </if>
+      <if test="rightCategory != null">
+        #{rightCategory,jdbcType=VARCHAR},
+      </if>
+      <if test="rightValue != null">
+        #{rightValue,jdbcType=VARCHAR},
+      </if>
+      <if test="comparator != null">
+        #{comparator,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.zhenghao.risk.control.common.model.ConditionPOExample" resultType="java.lang.Long">
+    select count(*) from t_condition
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update t_condition
+    <set>
+      <if test="record.id != null">
+        id = #{record.id,jdbcType=BIGINT},
+      </if>
+      <if test="record.leftCategory != null">
+        left_category = #{record.leftCategory,jdbcType=VARCHAR},
+      </if>
+      <if test="record.leftValue != null">
+        left_value = #{record.leftValue,jdbcType=VARCHAR},
+      </if>
+      <if test="record.rightCategory != null">
+        right_category = #{record.rightCategory,jdbcType=VARCHAR},
+      </if>
+      <if test="record.rightValue != null">
+        right_value = #{record.rightValue,jdbcType=VARCHAR},
+      </if>
+      <if test="record.comparator != null">
+        comparator = #{record.comparator,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update t_condition
+    set id = #{record.id,jdbcType=BIGINT},
+      left_category = #{record.leftCategory,jdbcType=VARCHAR},
+      left_value = #{record.leftValue,jdbcType=VARCHAR},
+      right_category = #{record.rightCategory,jdbcType=VARCHAR},
+      right_value = #{record.rightValue,jdbcType=VARCHAR},
+      comparator = #{record.comparator,jdbcType=VARCHAR}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.zhenghao.risk.control.common.model.ConditionPO">
+    update t_condition
+    <set>
+      <if test="leftCategory != null">
+        left_category = #{leftCategory,jdbcType=VARCHAR},
+      </if>
+      <if test="leftValue != null">
+        left_value = #{leftValue,jdbcType=VARCHAR},
+      </if>
+      <if test="rightCategory != null">
+        right_category = #{rightCategory,jdbcType=VARCHAR},
+      </if>
+      <if test="rightValue != null">
+        right_value = #{rightValue,jdbcType=VARCHAR},
+      </if>
+      <if test="comparator != null">
+        comparator = #{comparator,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.zhenghao.risk.control.common.model.ConditionPO">
+    update t_condition
+    set left_category = #{leftCategory,jdbcType=VARCHAR},
+      left_value = #{leftValue,jdbcType=VARCHAR},
+      right_category = #{rightCategory,jdbcType=VARCHAR},
+      right_value = #{rightValue,jdbcType=VARCHAR},
+      comparator = #{comparator,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <select id="selectByExampleWithRowbounds" parameterType="com.zhenghao.risk.control.common.model.ConditionPOExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from t_condition
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+</mapper>

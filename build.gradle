@@ -1,0 +1,198 @@
+
+ext {
+    //spring
+    springBootVersion = '1.5.6.RELEASE'
+    springVersion = '4.2.4.RELEASE'
+
+    //工具依赖
+    groovyVersion = '2.4.4'
+    guavaVersion = '19.0'
+    commonsCollectionVersion = '3.2.2'
+    commonsCodecVersion = '1.10'
+    commonsLangVersion = '3.6'
+    jacksonVersion = '2.8.11'
+    lombokVersion = '1.16.12'
+    commonsBeanUtils = '1.9.3'
+    fastJsonVersion = '1.2.44'
+    modelMapperVersion = '1.1.2'
+    
+    //drools
+    droolsVersion = '7.6.0.Final'
+
+    //database
+    mybatisVersion = '3.3.0'
+    mybatisSpringVersion = '1.2.5'
+    mysqlConnectorVersion = '5.1.37'
+    druidVersion = '1.1.6'
+    
+    //测试依赖
+    h2Version = '1.4.190'
+    powerMockitoVersion = '1.7.0'
+    mockitoCoreVersion = '2.8.9'
+    assertjCoreVersion = '2.6.0'
+
+    env = System.getProperty("env") == null ? "dev" : System.getProperty("env")
+}
+
+buildscript {
+    ext {
+        springBootVersion = '1.5.6.RELEASE'
+    }
+
+    repositories {
+        maven { url 'http://maven.aliyun.com/nexus/content/groups/public/' }
+        jcenter()
+        mavenLocal()
+    }
+
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:$springBootVersion")
+    }
+}
+
+allprojects {
+    apply plugin: 'java'
+    apply plugin: 'idea'
+
+    group 'com.zhenghao'
+    version '0.0.1-SNAPSHOT'
+    
+    configurations.all {
+        // check for updates every build
+        resolutionStrategy {
+            cacheChangingModulesFor 0, 'seconds'
+            force "org.codehaus.groovy:groovy-all:$groovyVersion"
+            force "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion"
+
+        }
+    }
+}
+
+subprojects {
+
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+
+    configurations {
+        all*.exclude group: "org.springframework.boot", module: "spring-boot-starter-logging"
+    }
+
+    repositories {
+        maven { url 'http://maven.aliyun.com/nexus/content/groups/public/' }
+        jcenter()
+        mavenLocal()
+    }
+
+    sourceSets {
+        main {
+            resources {
+                srcDirs = ["src/main/resources/base", "src/main/resources/$env"]
+            }
+        }
+        test {
+            resources {
+                srcDirs = ["src/test/resources/base", "src/main/resources/$env"]
+            }
+        }
+    }
+
+    if (it.name != "risk-control-contract") {
+        dependencies {
+            
+            //spring等
+            compile "org.springframework.boot:spring-boot-starter:$springBootVersion"
+            testCompile ("org.springframework.boot:spring-boot-starter-test:$springBootVersion")
+            compile "org.springframework.boot:spring-boot-starter-log4j2:$springBootVersion"
+            compile "org.springframework:spring-aspects:$springVersion"
+            compile "org.springframework:spring-tx:$springVersion"
+            compile "org.springframework:spring-context:$springVersion"
+            compile "org.springframework.boot:spring-boot-starter-validation:$springBootVersion"
+            
+            //drools
+            compile "org.drools:drools-compiler:$droolsVersion"
+
+            //工具依赖
+            compile "com.google.guava:guava:$guavaVersion"
+            compile "commons-collections:commons-collections:$commonsCollectionVersion"
+            compile "commons-codec:commons-codec:$commonsCodecVersion"
+            compile "org.apache.commons:commons-lang3:$commonsLangVersion"
+            compile("com.fasterxml.jackson.core:jackson-core:$jacksonVersion") {
+                exclude group: "org.springframework.boot"
+            }
+            compile "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion"
+            compile "com.fasterxml.jackson.core:jackson-annotations:$jacksonVersion"
+            compile "commons-beanutils:commons-beanutils:$commonsBeanUtils"
+            compile "org.projectlombok:lombok:$lombokVersion"
+            compile "com.alibaba:fastjson:$fastJsonVersion"
+
+            //database
+            compile "mysql:mysql-connector-java:$mysqlConnectorVersion"
+            compile "org.mybatis:mybatis:$mybatisVersion"
+            compile "org.mybatis:mybatis-spring:$mybatisSpringVersion"
+            compile "org.springframework:spring-jdbc:$springVersion"
+            compile "com.alibaba:druid:$druidVersion"
+       
+            testCompile "com.h2database:h2:$h2Version"
+
+            //mock
+            testCompile ("org.mockito:mockito-core:$mockitoCoreVersion") {
+                exclude group: "org.springframework.boot"
+                exclude group: "org.powermock", module: "powermock-api-mockito2"
+            }
+            testCompile ("org.powermock:powermock-api-mockito2:$powerMockitoVersion")
+            testCompile "org.powermock:powermock-module-junit4:$powerMockitoVersion"
+            testCompile "org.powermock:powermock-module-junit4-rule-agent:$powerMockitoVersion"
+
+            compile "org.assertj:assertj-core:$assertjCoreVersion"
+        }
+    }
+
+}
+
+
+project(":risk-control-api") {
+    apply plugin: 'org.springframework.boot'
+    dependencies {
+        compile project(":risk-control-service")
+
+        compile "org.springframework.boot:spring-boot-starter-web:$springBootVersion"
+        compile "org.springframework.boot:spring-boot-starter-aop:$springBootVersion"
+    }
+}
+
+project(":risk-control-service") {
+    dependencies {
+        compile project(":risk-control-repository")
+        compile project(":risk-control-contract")
+        compile project(":risk-control-logic")
+    }
+}
+
+project(":risk-control-repository") {
+    dependencies {
+        compile project(":risk-control-common")
+        compile project(":risk-control-contract")
+    }
+}
+
+project(":risk-control-common") {
+    dependencies {
+        compile project(":risk-control-contract")
+
+        compile "org.modelmapper:modelmapper:$modelMapperVersion"
+    }
+}
+
+project(":risk-control-contract") {
+    dependencies {
+        compile "org.projectlombok:lombok:$lombokVersion"
+        compile "org.apache.commons:commons-lang3:$commonsLangVersion"
+    }
+}
+
+project(":risk-control-logic") {
+    dependencies {
+        compile project(":risk-control-repository")
+        compile project(":risk-control-contract")
+    }
+}
